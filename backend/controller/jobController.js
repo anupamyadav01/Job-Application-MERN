@@ -3,9 +3,7 @@ import { JobModel } from "../model/jobModel.js";
 export const createJob = async (req, res) => {
   try {
     const jobs = req.body;
-    // console.log(jobs);
     const newlyInstertedJob = await JobModel.create(req.body);
-    // console.log(newlyInstertedJob);
 
     res.json({
       sucess: true,
@@ -20,8 +18,21 @@ export const createJob = async (req, res) => {
   }
 };
 
-export const listJob = async (req, res) => {
-  const jobsData = await JobModel.find();
+export const showJobs = async (req, res) => {
+  // todo: apply filter on various fields
+  const minSalary = req.query.minSalary || 0;
+
+  const conditions = {};
+  if (req.query.minSalary) {
+    conditions.salary = { $gt: minSalary };
+  }
+
+  if (req.query.title) {
+    conditions.title = new RegExp(req.query.title, "gi");
+  }
+
+  const jobsData = await JobModel.find(conditions);
+
   res.json({
     success: true,
     message: "List of all jobs API called",
@@ -45,7 +56,7 @@ export const deleteJob = (req, res) => {
 
 export const jobController = {
   createJob,
-  listJob,
+  showJobs,
   updateJob,
   deleteJob,
 };
