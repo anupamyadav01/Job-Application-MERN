@@ -40,18 +40,46 @@ export const showJobs = async (req, res) => {
   });
 };
 
-export const updateJob = (req, res) => {
+export const updateJob = async (req, res) => {
+  const id = req.params.id;
+
+  const dataToUpdated = {
+    $set: req.body,
+  };
+
+  // if response is null that means no data is updated else it will return data that is updated by this operation
+
+  // using this method we can update maximum i field
+  // const response = await JobModel.findByIdAndUpdate(id, dataToUpdated);
+  // console.log(response);
+
+  // updating multiple fields
+  const filterObj = {
+    salary: 80000,
+  };
+  const response = await JobModel.updateMany(filterObj, dataToUpdated);
+  console.log(response);
+
+  // console.log(id);
+
   res.json({
     success: true,
     message: "Update job API called",
   });
 };
 
-export const deleteJob = (req, res) => {
-  res.json({
-    success: true,
-    message: "Delete job API called",
-  });
+export const deleteJob = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const deletedData = await JobModel.findByIdAndDelete(id);
+    console.log(deletedData);
+    res.status(200).json({
+      success: true,
+      message: "Delete job API called",
+    });
+  } catch (error) {
+    console.log("Failed to delete job", error);
+  }
 };
 
 export const jobController = {
